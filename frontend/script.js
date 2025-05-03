@@ -1,5 +1,88 @@
 const URL_BASE_API = 'http://127.0.0.1:5000/api';
 
+// Dados para gráficos
+const dadosGraficoCpu = [];
+const dadosGraficoMemoria = [];
+const dadosGraficoDisco = [];
+const maxPontosGrafico = 20;
+
+// Inicializa gráficos
+const ctxCpu = document.getElementById('grafico-cpu').getContext('2d');
+const ctxMemoria = document.getElementById('grafico-memoria').getContext('2d');
+const ctxDisco = document.getElementById('grafico-disco').getContext('2d');
+
+const graficoCpu = new Chart(ctxCpu, {
+    type: 'line',
+    data: {
+        labels: Array(maxPontosGrafico).fill(''),
+        datasets: [{
+            label: 'Uso de CPU (%)',
+            data: dadosGraficoCpu,
+            borderColor: '#00e6e6',
+            backgroundColor: 'rgba(0, 230, 230, 0.2)',
+            fill: true,
+            tension: 0.4
+        }]
+    },
+    options: {
+        scales: {
+            y: { beginAtZero: true, max: 100 },
+            x: { display: false }
+        },
+        plugins: {
+            legend: { display: true }
+        }
+    }
+});
+
+const graficoMemoria = new Chart(ctxMemoria, {
+    type: 'line',
+    data: {
+        labels: Array(maxPontosGrafico).fill(''),
+        datasets: [{
+            label: 'Uso de Memória (%)',
+            data: dadosGraficoMemoria,
+            borderColor: '#ff00ff',
+            backgroundColor: 'rgba(255, 0, 255, 0.2)',
+            fill: true,
+            tension: 0.4
+        }]
+    },
+    options: {
+        scales: {
+            y: { beginAtZero: true, max: 100 },
+            x: { display: false }
+        },
+        plugins: {
+            legend: { display: true }
+        }
+    }
+});
+
+const graficoDisco = new Chart(ctxDisco, {
+    type: 'line',
+    data: {
+        labels: Array(maxPontosGrafico).fill(''),
+        datasets: [{
+            label: 'Uso de Disco (%)',
+            data: dadosGraficoDisco,
+            borderColor: '#33cc33',
+            backgroundColor: 'rgba(51, 204, 51, 0.2)',
+            fill: true,
+            tension: 0.4
+        }]
+    },
+    options: {
+        scales: {
+            y: { beginAtZero: true, max: 100 },
+            x: { display: false }
+        },
+        plugins: {
+            legend: { display: true }
+        }
+    }
+});
+
 async function buscarInfoSistema() {
     try {
         const resposta = await fetch(`${URL_BASE_API}/info_sistema`);
@@ -13,17 +96,20 @@ async function buscarInfoSistema() {
             document.getElementById('cpu-nucleos-fisicos').textContent = dados.cpu.nucleos_fisicos;
             document.getElementById('cpu-nucleos-logicos').textContent = dados.cpu.nucleos_logicos;
             document.getElementById('cpu-frequencia').textContent = dados.cpu.frequencia_mhz !== "N/A" ? dados.cpu.frequencia_mhz.toFixed(2) : "N/A";
-            document.getElementById('cpu-percentual').textContent = dados.cpu.uso_percentual;
+            document.getElementById('cpu-percentual').textContent = dados.cpu.uso_percentual.toFixed(1);
+            document.getElementById('cpu-progresso').style.width = `${dados.cpu.uso_percentual}%`;
 
             document.getElementById('mem-total').textContent = dados.memoria.total_gb;
             document.getElementById('mem-usada').textContent = dados.memoria.usada_gb;
             document.getElementById('mem-livre').textContent = dados.memoria.livre_gb;
-            document.getElementById('mem-percentual').textContent = dados.memoria.uso_percentual;
+            document.getElementById('mem-percentual').textContent = dados.memoria.uso_percentual.toFixed(1);
+            document.getElementById('mem-progresso').style.width = `${dados.memoria.uso_percentual}%`;
 
             document.getElementById('disco-total').textContent = dados.disco.total_gb;
             document.getElementById('disco-usada').textContent = dados.disco.usada_gb;
             document.getElementById('disco-livre').textContent = dados.disco.livre_gb;
-            document.getElementById('disco-percentual').textContent = dados.disco.uso_percentual;
+            document.getElementById('disco-percentual').textContent = dados.disco.uso_percentual.toFixed(1);
+            document.getElementById('disco-progresso').style.width = `${dados.disco.uso_percentual}%`;
 
             const infoBateriaElement = document.getElementById('info-bateria');
             if (typeof dados.bateria === 'object') {
@@ -35,6 +121,18 @@ async function buscarInfoSistema() {
                 infoBateriaElement.innerHTML = `<p><strong>Bateria:</strong> ${dados.bateria}</p>`;
                 infoBateriaElement.style.display = 'block';
             }
+
+            dadosGraficoCpu.push(dados.cpu.uso_percentual);
+            dadosGraficoMemoria.push(dados.memoria.uso_percentual);
+            dadosGraficoDisco.push(dados.disco.uso_percentual);
+            if (dadosGraficoCpu.length > maxPontosGrafico) {
+                dadosGraficoCpu.shift();
+                dadosGraficoMemoria.shift();
+                dadosGraficoDisco.shift();
+            }
+            graficoCpu.update();
+            graficoMemoria.update();
+            graficoDisco.update();
         } else {
             console.error('Erro ao buscar informações do sistema:', dados.erro);
         }
@@ -83,7 +181,11 @@ function exibirProcessos(processos) {
                 <td>${processo.status}</td>
                 <td>${processo.cpu_percent ? processo.cpu_percent.toFixed(1) : 'N/A'}</td>
                 <td>${processo.memory_percent ? processo.memory_percent.toFixed(1) : 'N/A'}</td>
-                <td><button class="btn btn-sm btn-info botao-ver-detalhes" data-pid="${processo.pid}">Detalhes</button></td>
+                <td>
+                    <button class="btn btn-sm btn-info botao-ver-detalhes" data-pid="${processo.pid}">
+                        <i class="bi bi-eye"></i> Detalhes
+                    </button>
+                </td>
             `;
             corpoTabela.appendChild(linha);
         }
@@ -95,7 +197,7 @@ function exibirProcessos(processos) {
 }
 
 async function lidarCliqueVerDetalhes(evento) {
-    const pid = evento.target.dataset.pid;
+    const pid = evento.target.closest('button').dataset.pid;
     try {
         const resposta = await fetch(`${URL_BASE_API}/processo/${pid}`);
         const detalhes = await resposta.json();
@@ -112,6 +214,9 @@ async function lidarCliqueVerDetalhes(evento) {
             document.getElementById('modal-processo-usuario').textContent = detalhes.username;
             document.getElementById('modal-processo-executavel').textContent = detalhes.exe || 'N/A';
 
+            const botaoEncerrar = document.getElementById('botao-encerrar-processo');
+            botaoEncerrar.dataset.pid = pid;
+
             const modal = new bootstrap.Modal(document.getElementById('modalDetalhesProcesso'));
             modal.show();
         } else {
@@ -124,7 +229,33 @@ async function lidarCliqueVerDetalhes(evento) {
     }
 }
 
+async function lidarCliqueEncerrarProcesso(evento) {
+    const pid = evento.target.dataset.pid;
+    if (confirm(`Tem certeza que deseja encerrar o processo com PID ${pid}?`)) {
+        try {
+            const resposta = await fetch(`${URL_BASE_API}/processo/${pid}/encerrar`, {
+                method: 'POST'
+            });
+            const resultado = await resposta.json();
+
+            if (resposta.ok) {
+                alert(resultado.mensagem);
+                const modal = bootstrap.Modal.getInstance(document.getElementById('modalDetalhesProcesso'));
+                modal.hide();
+                buscarProcessos(); // Atualiza a lista de processos
+            } else {
+                alert(`Erro ao encerrar o processo: ${resultado.erro}`);
+                console.error('Erro ao encerrar o processo:', resultado.erro);
+            }
+        } catch (erro) {
+            alert(`Erro na requisição para encerrar o processo: ${erro}`);
+            console.error('Erro na requisição para encerrar o processo:', erro);
+        }
+    }
+}
+
 document.getElementById('busca-processos').addEventListener('input', buscarProcessos);
+document.getElementById('botao-encerrar-processo')?.addEventListener('click', lidarCliqueEncerrarProcesso);
 
 function atualizarInfoPeriodicamente() {
     buscarInfoSistema();

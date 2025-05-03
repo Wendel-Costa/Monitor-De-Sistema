@@ -1,56 +1,187 @@
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #e9eff5;
-    color: #333;
+    font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1a1a3d 0%, #2a1a5e 100%);
+    color: #e0e0e0;
+    margin: 0;
+    padding: 0;
 }
 
 .container {
-    margin-top: 30px;
-    margin-bottom: 30px;
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+h1 {
+    font-weight: 700;
+    text-shadow: 0 0 10px rgba(0, 230, 230, 0.5);
+    color: #00e6e6;
 }
 
 .card {
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background: rgba(30, 30, 60, 0.9);
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 0 15px rgba(0, 230, 230, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 32px rgb(255, 255, 255), 0 0 60px rgba(0, 230, 230, 0.59);
+    
 }
 
 .card-header {
-    font-weight: bold;
-    background-color: #007bff;
-    color: white;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
+    font-weight: 600;
+    background: linear-gradient(90deg, #00e6e6, #ff00ff);
+    color: #fff;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
 
 .card-body p {
-    margin-bottom: 8px;
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+}
+
+.card-body strong {
+    color: #00e6e6;
+}
+
+.progresso-recurso {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    height: 10px;
+    margin-bottom: 15px;
+    overflow: hidden;
+}
+
+.progresso-barra {
+    height: 100%;
+    transition: width 0.5s ease;
+}
+
+.progresso-cpu {
+    background: linear-gradient(90deg, #00e6e6, #33ccff);
+}
+
+.progresso-memoria {
+    background: linear-gradient(90deg, #ff00ff, #ff66cc);
+}
+
+.progresso-disco {
+    background: linear-gradient(90deg, #33cc33, #66ff66);
 }
 
 .table {
-    margin-top: 10px;
+    margin-top: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 .table th {
-    background-color: #f2f2f2;
+    background: rgba(0, 230, 230, 0.2);
+    color: #e0e0e0;
+    font-weight: 600;
+    border: none;
+}
+
+.table td {
+    color: #d0d0d0;
+    border: none;
+    vertical-align: middle;
 }
 
 .table-striped tbody tr:nth-of-type(odd) {
-    background-color: #f9f9f9;
+    background: rgba(255, 255, 255, 0.03);
 }
 
 .table-hover tbody tr:hover {
-    background-color: #e9ecef;
+    background: rgba(0, 230, 230, 0.15);
     cursor: pointer;
+    transition: background 0.2s ease;
 }
 
-.botao-ver-detalhes {
-    padding: .25rem .5rem;
-    font-size: .875rem;
-    line-height: 1.5;
-    border-radius: .2rem;
+.botao-ver-detalhes, .botao-encerrar-processo {
+    padding: 6px 12px;
+    font-size: 0.9rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 8px rgba(0, 230, 230, 0.3);
+}
+
+.botao-ver-detalhes:hover {
+    background: #33ccff;
+    box-shadow: 0 0 12px rgba(0, 230, 230, 0.5);
+    transform: translateY(-2px);
+}
+
+.botao-encerrar-processo {
+    background: #ff3333;
+    border: none;
+}
+
+.botao-encerrar-processo:hover {
+    background: #ff6666;
+    box-shadow: 0 0 12px rgba(255, 51, 51, 0.5);
+    transform: translateY(-2px);
+}
+
+.form-control {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #e0e0e0;
+    border-radius: 6px;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: #00e6e6;
+    box-shadow: 0 0 8px rgba(0, 230, 230, 0.3);
+    color: #e0e0e0;
+}
+
+.form-control::placeholder {
+    color: rgba(255, 255, 255, 0.5);
 }
 
 #info-bateria p {
     font-style: italic;
-    color: #6c757d;
+    color: #b0b0b0;
+}
+
+.modal-content {
+    background: rgba(30, 30, 60, 0.95);
+    border: 1px solid rgba(0, 230, 230, 0.3);
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0, 230, 230, 0.2);
+}
+
+.modal-header {
+    background: linear-gradient(90deg, #00e6e6, #ff00ff);
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    color: #fff;
+}
+
+.modal-body p {
+    color: #d0d0d0;
+}
+
+.modal-body strong {
+    color: #00e6e6;
+}
+
+.btn-close {
+    filter: invert(1);
+}
+
+canvas {
+    margin-top: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 10px;
 }

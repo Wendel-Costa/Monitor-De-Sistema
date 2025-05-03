@@ -111,5 +111,22 @@ def obter_detalhes_processo(pid):
     except Exception as e:
         return jsonify({"erro": str(e)}), 500
 
+@app.route('/api/processo/<int:pid>/encerrar', methods=['POST'])
+def encerrar_processo(pid):
+    """Encerra um processo pelo PID."""
+    try:
+        p = psutil.Process(pid)
+        p.terminate()
+        p.wait(timeout=3)
+        return jsonify({"mensagem": f"Processo com PID {pid} encerrado com sucesso."}), 200
+    except psutil.NoSuchProcess:
+        return jsonify({"erro": f"Processo com PID {pid} não encontrado."}), 404
+    except psutil.AccessDenied:
+        return jsonify({"erro": f"Acesso negado para encerrar o processo com PID {pid}."}), 403
+    except psutil.TimeoutExpired:
+        return jsonify({"erro": f"Não foi possível encerrar o processo com PID {pid} dentro do tempo limite."}), 500
+    except Exception as e:
+        return jsonify({"erro": str(e)}), 500
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
