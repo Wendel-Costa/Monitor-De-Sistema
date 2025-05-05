@@ -1,12 +1,10 @@
 const URL_BASE_API = 'http://127.0.0.1:5000/api';
 
-// Dados para gráficos
 const dadosGraficoCpu = [];
 const dadosGraficoMemoria = [];
 const dadosGraficoDisco = [];
 const maxPontosGrafico = 20;
 
-// Inicializa gráficos
 const ctxCpu = document.getElementById('grafico-cpu').getContext('2d');
 const ctxMemoria = document.getElementById('grafico-memoria').getContext('2d');
 const ctxDisco = document.getElementById('grafico-disco').getContext('2d');
